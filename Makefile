@@ -27,7 +27,7 @@ test_sort: sort.o utilities.o
 test_graph: graph.o utilities.o
 	$(CC) $(CFLAGS) -o test_graph utilities.o graph.o test_graph.o $(TESTFLAGS)
 
-tests: test_sort
+tests: test_sort test_graph
 
 clean:
 	del -recurse -force *.o, *.exe

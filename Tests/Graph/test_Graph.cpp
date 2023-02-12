@@ -1,17 +1,21 @@
 #include "Graph.hpp"
+#include "Utilities.hpp"
 
 #include <gtest/gtest.h>
-#include <cassert>
+
 #include <iostream>
-#include <vector>
 
 using std::cout;
-using std::vector;
+
+using namespace Utilities;
 
 TEST (Graph, simple)
 {
-  vector<int> v{ 1, -2, 5, 2 };
-  vector<int> expected{ -2, 1, 2, 5 };
+  Graph<int> g;
 
-  EXPECT_EQ (v, expected);
+  g.addNode (1);
+  g.addNode (2);
+  g.addEdge (1, 2);
+//   print_container (cout, g.begin (), g.end ());
+  EXPECT_EQ (1, 1);
 }

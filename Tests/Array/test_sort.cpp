@@ -3,7 +3,6 @@
 
 #include <gtest/gtest.h>
 
-#include <cassert>
 #include <iostream>
 #include <vector>
 
