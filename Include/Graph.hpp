@@ -1,7 +1,8 @@
+#include <memory>
 #include <stack>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
-#include <memory>
 
 #ifndef __GRAPH_HPP__
 #define __GRAPH_HPP__
@@ -18,7 +19,8 @@ template <typename Container, typename DataType> class Iterator;
 
 template <typename Container, typename DataType> class DfsIterator;
 
-template <typename T> using Container = std::unordered_map<T, std::shared_ptr<Node<T>>>;
+template <typename T>
+using Container = std::unordered_map<T, std::shared_ptr<Node<T> > >;
 
 // template <typename Container, typename DataType>
 template <typename T> using iterator = Iterator<Container<T>, T>;
@@ -32,7 +34,7 @@ template <typename T> class Node
 {
 private:
   T data_;
-  std::vector<std::shared_ptr<Node<T>>> neighbors_;
+  std::vector<std::shared_ptr<Node<T> > > neighbors_;
 
   friend iterator<T>;
   friend const_iterator<T>;
@@ -124,7 +126,8 @@ template <typename Container, typename DataType> class DfsIterator
 {
 private:
   //   Node<DataType> *node_;
-  stack<std::shared_ptr<DataType>> stack_;
+  std::unordered_set<std::shared_ptr<Node<DataType> > > visited_;
+  stack<std::shared_ptr<Node<DataType> > > stack_;
 
 public:
   using iterator_category = std::forward_iterator_tag;
@@ -133,7 +136,7 @@ public:
   using reference = DataType &;
   using difference_type = std::ptrdiff_t;
 
-  DfsIterator (std::shared_ptr<DataType>n) { stack_.push (n); };
+  DfsIterator (std::shared_ptr<DataType> n) { stack_.push (n); };
   DfsIterator (const DfsIterator &other) { copy_iter (other); };
   DfsIterator (const typename Graph<DataType>::iterator &iter)
   {
@@ -150,13 +153,15 @@ public:
   DfsIterator &
   copy_iter (const DfsIterator &other)
   {
+    visited_ = other.visited_;
     stack_ = other.stack_;
     return *this;
   }
+
   reference
   operator* ()
   {
-    // TODO: check if empty
+    // TODO: check if empty - not the iterators responsibility
     return stack_.top ()->data_;
   }
 
@@ -172,9 +177,13 @@ public:
   {
     auto node = stack_.top ();
     stack_.pop ();
+    visited_.insert (node);
     for (auto n : node->neighbors_)
       {
-        stack_.push (n);
+        if (visited_.find (n) == visited_.end ())
+          {
+            stack_.push (n);
+          }
       }
   }
 
@@ -223,7 +232,7 @@ public:
   void
   addNode (const T &data)
   {
-    auto node = std::make_shared<Node<T>>(Node<T> (data));
+    auto node = std::make_shared<Node<T> > (Node<T> (data));
     nodes_[data] = node;
   }
 
@@ -237,11 +246,10 @@ public:
       {
         si->second->AddNeighbor (di->second);
       }
-      else
+    else
       {
         throw "Nodes aren't there mannnnn";
       }
-      
   }
 
   iterator
