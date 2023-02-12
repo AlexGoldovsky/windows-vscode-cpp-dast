@@ -1,0 +1,13 @@
+UNADDRESSABLE ACCESS
+name=custom not sure what it is
+instruction=or     $0x0000000000000000 (%rcx) -> (%rcx)
+...
+*ntdll.dll!RtlUserThreadStart
+
+##################################################
+POSSIBLE LEAK
+name=custom i#2339 VS2017 CRT mismatch B
+...
+*ntdll.dll!RtlUserThreadStart
+
+##################################################

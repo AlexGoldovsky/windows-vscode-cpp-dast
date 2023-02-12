@@ -1,0 +1,45 @@
+{
+    "version": "2.0.0",
+    "command": "bash",
+    "options": {
+        "cwd": "${workspaceRoot}"
+    },
+    "args": [
+        "-c"
+    ],
+    "problemMatcher": "$gcc",
+    "tasks": [
+        {
+            "label": "build",
+            "type": "shell",
+            "command": "bash",
+            "args": [
+                "-c",
+                "make build"
+            ],
+            "group": {
+                "_id": "build",
+                "isDefault": false
+            }
+        },
+        {
+            "label": "test",
+            "type": "cppbuild",
+            "command": "make",
+            "args": [
+                "tests"
+            ],
+            "group": {
+                "_id": "build",
+                "isDefault": false
+            },
+            "presentation": {
+                "reveal": "always"
+            },
+            "problemMatcher": "$gcc",
+            "options": {
+                "cwd": "C:\\Users\\t-agoldo\\OneDrive - Microsoft\\Desktop\\CCpp\\Practice"
+            }
+        }
+    ]
+}
