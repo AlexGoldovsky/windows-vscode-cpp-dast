@@ -1,9 +1,10 @@
-#include "Utilities.hpp"
-#include <algorithm>
-
 #ifndef __SORT_HPP__
 #define __SORT_HPP__
 
+#include "Utilities.hpp"
+
+#include <algorithm>
+#include <vector>
 using namespace Utilities;
 /**
  * This should result in a value in its sorted position
@@ -58,6 +59,73 @@ quickSort (RandomAccessIterator first, RandomAccessIterator last)
       quickSort (first, p);
       quickSort (++p, last);
     }
+}
+
+/**
+ * Since the algorithms isn't in place, we must have a copy of the data, hence the data type must be provided
+*/
+template <typename RandomAccessIterator, typename T>
+void
+mergeSort (const RandomAccessIterator begin, const RandomAccessIterator end)
+{
+
+  auto merge =
+      [] (const RandomAccessIterator lbegin, const RandomAccessIterator lend,
+          const RandomAccessIterator rbegin, const RandomAccessIterator rend) {
+        RandomAccessIterator l = lbegin;
+        RandomAccessIterator r = rbegin;
+
+        std::vector<T> vi;
+
+        while (l != lend && r != rend)
+          {
+            if (*l < *r)
+              {
+                vi.push_back (*l);
+                ++l;
+              }
+            else
+              {
+                vi.push_back (*r);
+                ++r;
+              }
+          }
+
+        // leftovers
+        while (l != lend)
+          {
+            vi.push_back (*l);
+            ++l;
+          }
+
+        while (r != rend)
+          {
+            vi.push_back (*r);
+            ++r;
+          }
+
+        auto i = vi.begin ();
+        auto j = lbegin;
+
+        while (i != vi.end ())
+          {
+            *j = *i;
+            ++i;
+            ++j;
+          }
+      };
+
+  if (begin + 1 == end)
+    {
+      return;
+    }
+
+  auto middle = begin + ((end - begin) / 2);
+
+  mergeSort<RandomAccessIterator, T> (begin, middle);
+  mergeSort<RandomAccessIterator, T> (middle, end);
+
+  merge (begin, middle, middle, end);
 }
 
 #endif // __SORT_HPP__

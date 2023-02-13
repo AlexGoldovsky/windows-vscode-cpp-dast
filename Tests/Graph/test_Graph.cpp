@@ -52,7 +52,6 @@ TEST (Graph, simple)
 /**
  * DFS Tests
  */
-
 TEST (Graph_DFS, FromRoot)
 {
   vector<int> v;
@@ -163,7 +162,6 @@ TEST (Graph_DFS, 5NodesFullyConnected)
 /**
  * BFS Tests
  */
-
 TEST (Graph_BFS, Simple7nodesBtree)
 {
   vector<int> v;
