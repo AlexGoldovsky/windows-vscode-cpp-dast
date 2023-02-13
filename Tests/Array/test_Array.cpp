@@ -1,4 +1,4 @@
-#include "Sort.hpp"
+#include "Array.hpp"
 #include "Utilities.hpp"
 
 #include <gtest/gtest.h>
@@ -12,7 +12,7 @@ using std::vector;
 using namespace Utilities;
 
 /**
- * Quick Sort tests
+ * quickSort tests
  */
 TEST (quickSort, simple)
 {
@@ -68,7 +68,7 @@ TEST (quickSort, complete_reverse)
 }
 
 /**
- * Merge Sort tests
+ * mergeSort tests
  */
 TEST (mergeSort, simple)
 {
@@ -124,7 +124,7 @@ TEST (mergeSort, complete_reverse)
 }
 
 /**
- * Bubble Sort tests
+ * bubbleSort tests
  */
 TEST (bubbleSort, simple)
 {
@@ -177,4 +177,57 @@ TEST (bubbleSort, complete_reverse)
   vector<int> expected{ -2, 1, 2 };
 
   EXPECT_EQ (v, expected);
+}
+
+/**
+ * quickSelect Tests
+*/
+TEST (quickSelect, simple0)
+{
+  vector<int> v{ 1, -2, 5, 2 };
+  auto i = quickSelect (v.begin (), v.end (), 0);
+
+  int expected = -2;
+
+  EXPECT_EQ (*i, expected);
+}
+
+TEST (quickSelect, simple1)
+{
+  vector<int> v{ 1, -2, 5, 2 };
+  auto i = quickSelect (v.begin (), v.end (), 1);
+
+  int expected = 1;
+
+  EXPECT_EQ (*i, expected);
+}
+
+TEST (quickSelect, simple2)
+{
+  vector<int> v{ 1, -2, 5, 2 };
+  auto i = quickSelect (v.begin (), v.end (), 2);
+
+  int expected = 2;
+
+  EXPECT_EQ (*i, expected);
+}
+
+TEST (quickSelect, simple3)
+{
+  vector<int> v{ 1, -2, 5, 2 };
+  auto i = quickSelect (v.begin (), v.end (), 3);
+
+  int expected = 5;
+
+  EXPECT_EQ (*i, expected);
+}
+
+TEST (quickSelect, single_element)
+{
+  vector<int> v{ 1};
+  auto i = quickSelect (v.begin (), v.end (), 0);
+
+  int expected = 1;
+
+  EXPECT_EQ (*i, expected);
 }

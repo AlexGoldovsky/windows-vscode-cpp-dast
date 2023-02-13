@@ -8,8 +8,9 @@ A graph with V vertices and E edges
 
 ### *Array Algorithms*
 An array with n elements
-| *Algorithm*     | *Time complexity*      |
-| -----------     | -----------            |
-| quickSort       | *O(n\*log(n))* (mean)  |
-| mergeSort       | *O(n\*log(n))*         |
-| bubbleSort      | *O(n^2)*         |
+| *Algorithm*     | *Time complexity*      | *Time complexity - Worst Case* |
+| -----------     | -----------            | -----------                    |                                 
+| quickSort       | *O(n\*log(n))* (mean)  | *O(n^2)*                         |
+| mergeSort       | *O(n\*log(n))*         |                                |
+| bubbleSort      | *O(n^2)*               |                                |
+| quickSelect     | *O(n)*  (mean)         | *O(n^2)*                         |
