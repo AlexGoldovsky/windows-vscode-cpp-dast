@@ -1,12 +1,14 @@
+#ifndef __GRAPH_HPP__
+#define __GRAPH_HPP__
+
 #include <memory>
+#include <queue>
 #include <stack>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
-#ifndef __GRAPH_HPP__
-#define __GRAPH_HPP__
-
+using std::queue;
 using std::stack;
 using std::unordered_map;
 using std::unordered_set;
@@ -16,12 +18,13 @@ template <typename T> class Node;
 
 template <typename T> class Graph;
 
+template <typename T> using node_ptr = std::shared_ptr<Node<T> >;
+
 template <typename Container, typename DataType> class Iterator;
 
 template <typename Container, typename DataType> class DfsIterator;
 
-template <typename T>
-using Container = std::unordered_map<T, std::shared_ptr<Node<T> > >;
+template <typename T> using Container = std::unordered_map<T, node_ptr<T> >;
 
 // template <typename Container, typename DataType>
 template <typename T> using iterator = Iterator<Container<T>, T>;
@@ -35,7 +38,7 @@ template <typename T> class Node
 {
 private:
   T data_;
-  std::vector<std::shared_ptr<Node<T> > > neighbors_;
+  std::vector<node_ptr<T> > neighbors_;
 
   friend iterator<T>;
   friend const_iterator<T>;
@@ -52,7 +55,7 @@ public:
   Node (const T &data) : data_ (data){};
   ~Node (){};
 
-  const std::vector<std::shared_ptr<Node<T> > > &
+  const std::vector<node_ptr<T> > &
   getNeighbors ()
   {
     return neighbors_;
@@ -238,9 +241,7 @@ public:
   using const_iterator = const_iterator<T>;
 
   Graph (){};
-  ~Graph (){
-
-  };
+  ~Graph (){};
 
   void
   addNode (const T &data)
@@ -269,8 +270,8 @@ public:
   void
   DFS (const T &src, Func visit)
   {
-    unordered_set<std::shared_ptr<Node<T> > > visited;
-    stack<std::shared_ptr<Node<T> > > stack;
+    unordered_set<node_ptr<T> > visited;
+    stack<node_ptr<T> > stack;
 
     stack.push (nodes_[src]);
 
@@ -278,13 +279,48 @@ public:
       {
         auto node = stack.top ();
         stack.pop ();
-        visit (node->getData ());
-        visited.insert (node);
-        for (auto n : node->getNeighbors ())
+
+        if (visited.find (node) == visited.end ())
           {
-            if (visited.find (n) == visited.end ())
+            visit (node->getData ());
+            visited.insert (node);
+            for (auto n : node->getNeighbors ())
               {
-                stack.push (n);
+                if (visited.find (n) == visited.end ())
+                  {
+                    stack.push (n);
+                  }
+              }
+          }
+      }
+  }
+
+  template <typename Func>
+  void
+  BFS (const T &src, Func visit)
+  {
+    unordered_set<node_ptr<T> > visited;
+    queue<node_ptr<T> > queue;
+
+    queue.push (nodes_[src]);
+
+    while (!queue.empty ())
+      {
+        auto node = queue.front ();
+        queue.pop ();
+
+        if (visited.find (node) == visited.end ())
+          {
+            visit (node->getData ());
+
+            visited.insert (node);
+
+            for (auto n : node->getNeighbors ())
+              {
+                if (visited.find (n) == visited.end ())
+                  {
+                    queue.push (n);
+                  }
               }
           }
       }
@@ -297,7 +333,7 @@ public:
     int num_components = 0;
     for (auto np : nodes_)
       {
-        if (visited.find(np.first) == visited.end())
+        if (visited.find (np.first) == visited.end ())
           {
             ++num_components;
             DFS (np.second->getData (),
