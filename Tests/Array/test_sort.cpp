@@ -122,3 +122,59 @@ TEST (mergeSort, complete_reverse)
 
   EXPECT_EQ (v, expected);
 }
+
+/**
+ * Bubble Sort tests
+ */
+TEST (bubbleSort, simple)
+{
+  vector<int> v{ 1, -2, 5, 2 };
+  bubbleSort (v.begin (), v.end ());
+
+  vector<int> expected{ -2, 1, 2, 5 };
+
+  EXPECT_EQ (v, expected);
+}
+
+TEST (bubbleSort, sorted)
+{
+  auto a = new int (4);
+  cout << a;
+
+  vector<int> v{ -2, 1, 2, 5 };
+  bubbleSort (v.begin (), v.end ());
+
+  vector<int> expected{ -2, 1, 2, 5 };
+
+  EXPECT_EQ (v, expected);
+}
+
+TEST (bubbleSort, single_element)
+{
+  vector<int> v{ -2 };
+  bubbleSort (v.begin (), v.end ());
+
+  vector<int> expected{ -2 };
+
+  EXPECT_EQ (v, expected);
+}
+
+TEST (bubbleSort, odd_number_elements)
+{
+  vector<int> v{ 1, -2, 2 };
+  bubbleSort (v.begin (), v.end ());
+
+  vector<int> expected{ -2, 1, 2 };
+
+  EXPECT_EQ (v, expected);
+}
+
+TEST (bubbleSort, complete_reverse)
+{
+  vector<int> v{ 2, 1, -2 };
+  bubbleSort (v.begin (), v.end ());
+
+  vector<int> expected{ -2, 1, 2 };
+
+  EXPECT_EQ (v, expected);
+}

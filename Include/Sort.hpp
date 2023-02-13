@@ -62,8 +62,9 @@ quickSort (RandomAccessIterator first, RandomAccessIterator last)
 }
 
 /**
- * Since the algorithms isn't in place, we must have a copy of the data, hence the data type must be provided
-*/
+ * Since the algorithms isn't in place, we must have a copy of the data, hence
+ * the data type must be provided
+ */
 template <typename RandomAccessIterator, typename T>
 void
 mergeSort (const RandomAccessIterator begin, const RandomAccessIterator end)
@@ -128,4 +129,31 @@ mergeSort (const RandomAccessIterator begin, const RandomAccessIterator end)
   merge (begin, middle, middle, end);
 }
 
+template <class RandomAccessIterator>
+void
+bubbleSort (RandomAccessIterator first, RandomAccessIterator last)
+{
+  if (first == last)
+    {
+      return;
+    }
+
+  auto j = last;
+  while (j != first)
+    {
+      auto i = first;
+      auto max = first;
+      while (i != j)
+        {
+          if (*max < *i)
+            {
+              max = i;
+            }
+          ++i;
+        }
+
+      std::swap (*max, *(j - 1));
+      --j;
+    }
+}
 #endif // __SORT_HPP__

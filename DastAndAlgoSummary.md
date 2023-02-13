@@ -12,3 +12,4 @@ An array with n elements
 | -----------     | -----------            |
 | quickSort       | *O(n\*log(n))* (mean)  |
 | mergeSort       | *O(n\*log(n))*         |
+| bubbleSort      | *O(n^2)*         |
