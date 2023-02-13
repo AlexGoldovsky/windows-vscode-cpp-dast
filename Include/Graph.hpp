@@ -15,10 +15,12 @@ using std::unordered_set;
 using std::vector;
 
 template <typename T> class Node;
-
+template <typename T> struct Edge;
 template <typename T> class Graph;
 
 template <typename T> using node_ptr = std::shared_ptr<Node<T> >;
+template <typename T> using node_weak_ptr = std::weak_ptr<Node<T> >;
+template <typename T> using edge_ptr = std::shared_ptr<Edge<T> >;
 
 template <typename Container, typename DataType> class Iterator;
 
@@ -38,7 +40,7 @@ template <typename T> class Node
 {
 private:
   T data_;
-  std::vector<node_ptr<T> > neighbors_;
+  std::vector<edge_ptr<T> > neighbors_;
 
   friend iterator<T>;
   friend const_iterator<T>;
@@ -55,8 +57,8 @@ public:
   Node (const T &data) : data_ (data){};
   ~Node (){};
 
-  const std::vector<node_ptr<T> > &
-  getNeighbors ()
+  const std::vector<edge_ptr<T> > &
+  getEdges ()
   {
     return neighbors_;
   }
@@ -68,10 +70,16 @@ public:
   }
 
   void
-  AddNeighbor (std::shared_ptr<Node> n)
+  addEdge (edge_ptr<T> e)
   {
-    neighbors_.push_back (n);
+    neighbors_.push_back (e);
   }
+};
+
+template <typename T> struct Edge
+{
+  node_weak_ptr<T> node;
+  const int weight;
 };
 
 template <typename Container, typename DataType> class Iterator
@@ -194,11 +202,11 @@ public:
     auto node = stack_.top ();
     stack_.pop ();
     visited_.insert (node);
-    for (auto n : node->neighbors_)
+    for (auto e : node->neighbors_)
       {
-        if (visited_.find (n) == visited_.end ())
+        if (visited_.find (e->node.lock()) == visited_.end ())
           {
-            stack_.push (n);
+            stack_.push (e->node.lock());
           }
       }
   }
@@ -251,14 +259,16 @@ public:
   }
 
   void
-  addEdge (const T &src, const T &dest)
+  addEdge (const T &src, const T &dest, const int weight = 1)
   {
     auto si = nodes_.find (src);
     auto di = nodes_.find (dest);
 
     if (si != nodes_.end () && di != nodes_.end ())
       {
-        si->second->AddNeighbor (di->second);
+        auto edge
+            = std::make_shared<Edge<T> > (Edge<T>{ di->second, weight });
+        si->second->addEdge (edge);
       }
     else
       {
@@ -284,11 +294,11 @@ public:
           {
             visit (node->getData ());
             visited.insert (node);
-            for (auto n : node->getNeighbors ())
+            for (auto e : node->getEdges ())
               {
-                if (visited.find (n) == visited.end ())
+                if (visited.find (e->node.lock()) == visited.end ())
                   {
-                    stack.push (n);
+                    stack.push (e->node.lock());
                   }
               }
           }
@@ -315,11 +325,11 @@ public:
 
             visited.insert (node);
 
-            for (auto n : node->getNeighbors ())
+            for (auto e : node->getEdges ())
               {
-                if (visited.find (n) == visited.end ())
+                if (visited.find (e->node.lock()) == visited.end ())
                   {
-                    queue.push (n);
+                    queue.push (e->node.lock());
                   }
               }
           }
