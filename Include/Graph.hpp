@@ -1,6 +1,8 @@
 #ifndef __GRAPH_HPP__
 #define __GRAPH_HPP__
 
+#include <algorithm>
+#include <limits>
 #include <memory>
 #include <queue>
 #include <stack>
@@ -80,6 +82,17 @@ template <typename T> struct Edge
 {
   node_weak_ptr<T> node;
   const int weight;
+};
+
+/**
+ * Wondering if edges make sense out of the context of a graph, as in path
+ * To eliminate this prev_and_dist struct
+ */
+template <typename T> struct prev_and_dist
+{
+  // not a reference since I want it to be nullable
+  std::shared_ptr<T> prev; // I don't think it should be a weak reference
+  int dist;
 };
 
 template <typename Container, typename DataType> class Iterator
@@ -204,9 +217,9 @@ public:
     visited_.insert (node);
     for (auto e : node->neighbors_)
       {
-        if (visited_.find (e->node.lock()) == visited_.end ())
+        if (visited_.find (e->node.lock ()) == visited_.end ())
           {
-            stack_.push (e->node.lock());
+            stack_.push (e->node.lock ());
           }
       }
   }
@@ -266,8 +279,7 @@ public:
 
     if (si != nodes_.end () && di != nodes_.end ())
       {
-        auto edge
-            = std::make_shared<Edge<T> > (Edge<T>{ di->second, weight });
+        auto edge = std::make_shared<Edge<T> > (Edge<T>{ di->second, weight });
         si->second->addEdge (edge);
       }
     else
@@ -296,9 +308,9 @@ public:
             visited.insert (node);
             for (auto e : node->getEdges ())
               {
-                if (visited.find (e->node.lock()) == visited.end ())
+                if (visited.find (e->node.lock ()) == visited.end ())
                   {
-                    stack.push (e->node.lock());
+                    stack.push (e->node.lock ());
                   }
               }
           }
@@ -327,9 +339,9 @@ public:
 
             for (auto e : node->getEdges ())
               {
-                if (visited.find (e->node.lock()) == visited.end ())
+                if (visited.find (e->node.lock ()) == visited.end ())
                   {
-                    queue.push (e->node.lock());
+                    queue.push (e->node.lock ());
                   }
               }
           }
@@ -352,6 +364,58 @@ public:
       }
 
     return num_components;
+  }
+
+  std::unique_ptr<std::unordered_map<T, prev_and_dist<T> > >
+  Dijkstra (const T &src)
+  {
+    std::unordered_map<T, prev_and_dist<T> > nodes;
+
+    std::vector<T> min_heap;
+    auto min_heap_cmp = [&nodes] (auto ln, auto rn) {
+      return nodes[ln].dist > nodes[rn].dist;
+    };
+
+    for (auto node : nodes_)
+      {
+        prev_and_dist<T> pd;
+        pd.dist = INT_MAX;
+        pd.prev = nullptr;
+
+        nodes[node.first] = pd;
+        min_heap.push_back (node.first);
+      }
+
+    nodes[src] = { nullptr, 0 };
+    std::make_heap (min_heap.begin (), min_heap.end (), min_heap_cmp);
+
+    while (!min_heap.empty ())
+      {
+        std::pop_heap (min_heap.begin (), min_heap.end (), min_heap_cmp);
+        T min_dist_node = min_heap.back ();
+        min_heap.pop_back ();
+
+        for (auto edge : nodes_[min_dist_node]->getEdges ())
+          {
+            auto edge_node = edge->node.lock ()->getData ();
+            if (std::find (min_heap.begin (), min_heap.end (), edge_node)
+                != min_heap.end ())
+              {
+                auto alt_dist = nodes[min_dist_node].dist + edge->weight;
+
+                if (alt_dist < nodes[edge_node].dist)
+                  {
+                    nodes[edge_node].dist = alt_dist;
+                    auto sp = std::shared_ptr<T> (new T (edge_node));
+                    nodes[edge_node].prev = sp;
+                  }
+              }
+          }
+      }
+
+    return std::move (
+        std::unique_ptr<std::unordered_map<T, prev_and_dist<T> > > (
+            new std::unordered_map<T, prev_and_dist<T> > (nodes)));
   }
 
   iterator

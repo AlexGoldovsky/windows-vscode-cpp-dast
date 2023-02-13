@@ -26,9 +26,6 @@ TEST (quickSort, simple)
 
 TEST (quickSort, sorted)
 {
-  auto a = new int (4);
-  cout << a;
-
   vector<int> v{ -2, 1, 2, 5 };
   quickSort (v.begin (), v.end ());
 
@@ -82,9 +79,6 @@ TEST (mergeSort, simple)
 
 TEST (mergeSort, sorted)
 {
-  auto a = new int (4);
-  cout << a;
-
   vector<int> v{ -2, 1, 2, 5 };
   mergeSort<vector<int>::iterator, int> (v.begin (), v.end ());
 
@@ -138,9 +132,6 @@ TEST (bubbleSort, simple)
 
 TEST (bubbleSort, sorted)
 {
-  auto a = new int (4);
-  cout << a;
-
   vector<int> v{ -2, 1, 2, 5 };
   bubbleSort (v.begin (), v.end ());
 

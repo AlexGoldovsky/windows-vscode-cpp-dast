@@ -155,7 +155,7 @@ TEST (Graph_DFS, 5NodesFullyConnected)
 
   g.DFS (1, [&v] (auto elem) { v.push_back (elem); });
 
-  vector<int> expected{ 1, 5, 4, 3, 2};
+  vector<int> expected{ 1, 5, 4, 3, 2 };
   EXPECT_EQ (v, expected);
 }
 
@@ -263,7 +263,7 @@ TEST (Graph_BFS, 5NodesFullyConnected)
 
   g.BFS (1, [&v] (auto elem) { v.push_back (elem); });
 
-  vector<int> expected{ 1, 2, 3, 4, 5};
+  vector<int> expected{ 1, 2, 3, 4, 5 };
   EXPECT_EQ (v, expected);
 }
 
@@ -357,4 +357,79 @@ TEST (Graph_CC, 5_nodes_partially_connected)
 
   auto num_componenets = g.CC ();
   EXPECT_EQ (num_componenets, 3);
+}
+
+/**
+ * Dijkstra Tests
+ */
+
+TEST (Graph_Dijkstra, direct)
+{
+  Graph<int> g;
+
+  g.addNode (1);
+  g.addNode (2);
+  g.addNode (3);
+
+  g.addEdge (1, 2, 1);
+  g.addEdge (2, 3, 2);
+  auto shortest_paths = g.Dijkstra (1);
+  EXPECT_EQ ((*shortest_paths)[2].dist, 1);
+}
+
+TEST (Graph_Dijkstra, simple)
+{
+  Graph<int> g;
+
+  g.addNode (1);
+  g.addNode (2);
+  g.addNode (3);
+
+  g.addEdge (1, 2, 1);
+  g.addEdge (2, 3, 2);
+  auto shortest_paths = g.Dijkstra (1);
+  EXPECT_EQ ((*shortest_paths)[3].dist, 3);
+}
+
+TEST (Graph_Dijkstra, not_connected)
+{
+  Graph<int> g;
+
+  g.addNode (1);
+  g.addNode (2);
+  g.addNode (3);
+
+  g.addEdge (1, 2, 1);
+  auto shortest_paths = g.Dijkstra (1);
+  EXPECT_EQ ((*shortest_paths)[3].dist, INT_MAX);
+}
+
+TEST (Graph_Dijkstra, cyclic_but_direct_longer)
+{
+  Graph<int> g;
+
+  g.addNode (1);
+  g.addNode (2);
+  g.addNode (3);
+
+  g.addEdge (1, 2, 1);
+  g.addEdge (2, 3, 1);
+  g.addEdge (1, 3, 5);
+  auto shortest_paths = g.Dijkstra (1);
+  EXPECT_EQ ((*shortest_paths)[3].dist, 2);
+}
+
+TEST (Graph_Dijkstra, cyclic_and_direct_shorter)
+{
+  Graph<int> g;
+
+  g.addNode (1);
+  g.addNode (2);
+  g.addNode (3);
+
+  g.addEdge (1, 2, 1);
+  g.addEdge (2, 3, 1);
+  g.addEdge (1, 3, 1);
+  auto shortest_paths = g.Dijkstra (1);
+  EXPECT_EQ ((*shortest_paths)[3].dist, 1);
 }
