@@ -112,6 +112,54 @@ TEST (Graph_DFS, 7nodesWithCycle)
   EXPECT_EQ (v, expected);
 }
 
+TEST (Graph_DFS, 5NodesFullyConnected)
+{
+  vector<int> v;
+  Graph<int> g;
+
+  g.addNode (1);
+  g.addNode (2);
+  g.addNode (3);
+  g.addNode (4);
+  g.addNode (5);
+
+  // connect 1
+  g.addEdge (1, 2);
+  g.addEdge (2, 1);
+
+  g.addEdge (1, 3);
+  g.addEdge (3, 1);
+
+  g.addEdge (1, 4);
+  g.addEdge (4, 1);
+
+  g.addEdge (1, 5);
+  g.addEdge (5, 1);
+
+  // connect 2
+  g.addEdge (2, 3);
+  g.addEdge (3, 2);
+
+  g.addEdge (2, 4);
+  g.addEdge (4, 2);
+
+  g.addEdge (2, 5);
+  g.addEdge (5, 2);
+
+  // connect 3
+  g.addEdge (3, 4);
+  g.addEdge (4, 3);
+
+  // connect 4
+  g.addEdge (4, 5);
+  g.addEdge (5, 4);
+
+  g.DFS (1, [&v] (auto elem) { v.push_back (elem); });
+
+  vector<int> expected{ 1, 5, 4, 3, 2};
+  EXPECT_EQ (v, expected);
+}
+
 /**
  * BFS Tests
  */
@@ -170,6 +218,54 @@ TEST (Graph_BFS, 7nodesWithCycle)
   g.BFS (1, [&v] (auto elem) { v.push_back (elem); });
 
   vector<int> expected{ 1, 2, 3, 4, 5, 6, 7 };
+  EXPECT_EQ (v, expected);
+}
+
+TEST (Graph_BFS, 5NodesFullyConnected)
+{
+  vector<int> v;
+  Graph<int> g;
+
+  g.addNode (1);
+  g.addNode (2);
+  g.addNode (3);
+  g.addNode (4);
+  g.addNode (5);
+
+  // connect 1
+  g.addEdge (1, 2);
+  g.addEdge (2, 1);
+
+  g.addEdge (1, 3);
+  g.addEdge (3, 1);
+
+  g.addEdge (1, 4);
+  g.addEdge (4, 1);
+
+  g.addEdge (1, 5);
+  g.addEdge (5, 1);
+
+  // connect 2
+  g.addEdge (2, 3);
+  g.addEdge (3, 2);
+
+  g.addEdge (2, 4);
+  g.addEdge (4, 2);
+
+  g.addEdge (2, 5);
+  g.addEdge (5, 2);
+
+  // connect 3
+  g.addEdge (3, 4);
+  g.addEdge (4, 3);
+
+  // connect 4
+  g.addEdge (4, 5);
+  g.addEdge (5, 4);
+
+  g.BFS (1, [&v] (auto elem) { v.push_back (elem); });
+
+  vector<int> expected{ 1, 2, 3, 4, 5};
   EXPECT_EQ (v, expected);
 }
 
