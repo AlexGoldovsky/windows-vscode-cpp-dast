@@ -9,6 +9,7 @@
 
 using std::stack;
 using std::unordered_map;
+using std::unordered_set;
 using std::vector;
 
 template <typename T> class Node;
@@ -50,6 +51,18 @@ public:
    */
   Node (const T &data) : data_ (data){};
   ~Node (){};
+
+  const std::vector<std::shared_ptr<Node<T> > > &
+  getNeighbors ()
+  {
+    return neighbors_;
+  }
+
+  const T &
+  getData ()
+  {
+    return data_;
+  }
 
   void
   AddNeighbor (std::shared_ptr<Node> n)
@@ -250,6 +263,49 @@ public:
       {
         throw "Nodes aren't there mannnnn";
       }
+  }
+
+  template <typename Func>
+  void
+  DFS (const T &src, Func visit)
+  {
+    unordered_set<std::shared_ptr<Node<T> > > visited;
+    stack<std::shared_ptr<Node<T> > > stack;
+
+    stack.push (nodes_[src]);
+
+    while (!stack.empty ())
+      {
+        auto node = stack.top ();
+        stack.pop ();
+        visit (node->getData ());
+        visited.insert (node);
+        for (auto n : node->getNeighbors ())
+          {
+            if (visited.find (n) == visited.end ())
+              {
+                stack.push (n);
+              }
+          }
+      }
+  }
+
+  int
+  CC ()
+  {
+    unordered_set<T> visited;
+    int num_components = 0;
+    for (auto np : nodes_)
+      {
+        if (visited.find(np.first) == visited.end())
+          {
+            ++num_components;
+            DFS (np.second->getData (),
+                 [&visited] (auto elem) { visited.insert (elem); });
+          }
+      }
+
+    return num_components;
   }
 
   iterator
