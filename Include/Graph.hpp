@@ -370,36 +370,50 @@ public:
   Dijkstra (const T &src)
   {
     std::unordered_map<T, prev_and_dist<T> > nodes;
-
     std::vector<T> min_heap;
+
     auto min_heap_cmp = [&nodes] (auto ln, auto rn) {
       return nodes[ln].dist > nodes[rn].dist;
     };
 
-    for (auto node : nodes_)
-      {
-        prev_and_dist<T> pd;
-        pd.dist = INT_MAX;
-        pd.prev = nullptr;
+    auto init = [&nodes, &src, &min_heap, &min_heap_cmp] (auto &nodes_) {
+      for (auto node : nodes_)
+        {
+          prev_and_dist<T> pd;
+          pd.dist = INT_MAX;
+          pd.prev = nullptr;
 
-        nodes[node.first] = pd;
-        min_heap.push_back (node.first);
-      }
+          nodes[node.first] = pd;
+          min_heap.push_back (node.first);
+        }
 
-    nodes[src] = { nullptr, 0 };
-    std::make_heap (min_heap.begin (), min_heap.end (), min_heap_cmp);
+      nodes[src] = { nullptr, 0 };
+
+      std::make_heap (min_heap.begin (), min_heap.end (), min_heap_cmp);
+    };
+
+    auto heap_pop = [&min_heap_cmp] (auto &min_heap) {
+      std::pop_heap (min_heap.begin (), min_heap.end (), min_heap_cmp);
+      T min_dist_node = min_heap.back ();
+      min_heap.pop_back ();
+      return min_dist_node;
+    };
+
+    auto heap_contains = [] (auto &heap, auto &node) {
+      return std::find (heap.begin (), heap.end (), node)
+             != heap.end ();
+    };
+
+    init (nodes_);
 
     while (!min_heap.empty ())
       {
-        std::pop_heap (min_heap.begin (), min_heap.end (), min_heap_cmp);
-        T min_dist_node = min_heap.back ();
-        min_heap.pop_back ();
+        T min_dist_node = heap_pop (min_heap);
 
         for (auto edge : nodes_[min_dist_node]->getEdges ())
           {
             auto edge_node = edge->node.lock ()->getData ();
-            if (std::find (min_heap.begin (), min_heap.end (), edge_node)
-                != min_heap.end ())
+            if (heap_contains(min_heap, edge_node))
               {
                 auto alt_dist = nodes[min_dist_node].dist + edge->weight;
 
